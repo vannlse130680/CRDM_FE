@@ -1,5 +1,5 @@
 {
-  "avatar": "Vuetify MD",
+  "avatar": "Comestic Manager",
   "buttons": "Buttons",
   "calendar": "Calendar",
   "charts": "Charts",
@@ -28,7 +28,7 @@
   "edit-profile": "Edit Profile",
   "register": "Register Page",
   "rforms": "Regular Forms",
-  "rtables": "Regular Tables",
+  "rtables": "View Project",
   "rtl": "RTL Support",
   "search": "Search",
   "settings": "Settings",
@@ -38,7 +38,7 @@
   "timeline": "Timeline",
   "typography": "Typography",
   "upgrade": "Upgrade To PRO",
-  "user": "User Profile",
+  "user": "Create Project",
   "vforms": "Validation Forms",
   "widgets": "Widgets",
   "wizard": "Wizard"

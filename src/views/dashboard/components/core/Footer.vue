@@ -33,7 +33,7 @@
             <v-icon size="18">
               mdi-heart
             </v-icon>
-            by <a href="https://www.creative-tim.com">Creative Tim</a> for a better web.
+            by <a href="https://www.creative-tim.com">nhóm đồ án</a> vjp pro.
           </div>
         </v-col>
       </v-row>
