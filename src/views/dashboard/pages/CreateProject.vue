@@ -30,22 +30,28 @@
                     v-model="first"
                     label="Project Code"
                     filled
-                  ></v-text-field>
+                  />
+
                   <v-text-field
                     v-model="first"
                     label="Project Name"
                     filled
-                  ></v-text-field>
+                  />
                 </v-col>
-                <v-btn
-                  tile
-                  color="success"
-                >
-                  <v-icon left>
-                    mdi-pencil
-                  </v-icon>
-                  Create
-                </v-btn>
+                <v-col>
+                  <v-btn
+                    absolute
+                    right
+                    bottom
+                    tile
+                    color="success"
+                  >
+                    <v-icon left>
+                      mdi-pencil
+                    </v-icon>
+                    Create
+                  </v-btn>
+                </v-col>
               </v-row>
             </v-container>
           </v-form>
@@ -57,6 +63,8 @@
 
 <script>
   export default {
-    //
+    data: () => ({
+      items: ['VFRAM', 'FPT', 'ABC', 'Buzz'],
+    }),
   }
 </script>

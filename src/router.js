@@ -44,6 +44,11 @@ export default new Router({
           path: 'project/view-project',
           component: () => import('@/views/dashboard/tables/ViewProject'),
         },
+        {
+          name: 'View Project Detail',
+          path: 'project/view-project-detail',
+          component: () => import('@/views/dashboard/pages/ViewProjectDetail'),
+        },
         // // Maps
         // {
         //   name: 'Google Maps',

@@ -111,15 +111,16 @@
           title: 'dashboard',
           to: '/',
         },
+
         {
-          icon: 'mdi-account',
-          title: 'Create Project',
-          to: '/project/create-project',
-        },
-        {
-          title: 'rtables',
+          title: 'Project',
           icon: 'mdi-clipboard-outline',
           to: '/project/view-project',
+        },
+        {
+          title: 'Formula',
+          icon: 'mdi-clipboard-outline',
+          to: '/project/view-formula',
         },
         // {
         //   title: 'typography',

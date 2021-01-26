@@ -4,11 +4,28 @@
     fluid
     tag="section"
   >
+    <v-row>
+      <v-col>
+        <v-btn
+          absolute
+          right
+          tile
+          color="success"
+          to="/project/create-project"
+        >
+          <v-icon left>
+            mdi-pencil
+          </v-icon>
+          Create New Project
+        </v-btn>
+      </v-col>
+    </v-row>
+
     <base-material-card
+      id="btn-create"
       color="success"
-      dark
       icon="mdi-clipboard-plus"
-      title="Table on Dark Background"
+      title="List project"
       class="px-5 py-3"
     >
       <v-simple-table>
@@ -23,6 +40,16 @@
         </thead>
 
         <tbody>
+          <router-link
+            to="/project/view-project-detail"
+            tag="tr"
+          >
+            <td>1</td>
+            <td>AX001</td>
+            <td>Niger</td>
+            <td>Oud-Turnhout</td>
+            <td>2020/01/01</td>
+          </router-link>
           <tr>
             <td>1</td>
             <td>AX001</td>
@@ -75,3 +102,8 @@
     </base-material-card>
   </v-container>
 </template>
+<style>
+#btn-create {
+  margin-top: 50px;
+}
+</style>
