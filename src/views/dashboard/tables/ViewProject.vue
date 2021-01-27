@@ -15,7 +15,7 @@
         :search="search"
         :headers="headers"
         :items="projects"
-        sort-by="calories"
+
         class="elevation-1"
       >
         <template v-slot:[`item.status`]="{ item }">
@@ -50,7 +50,7 @@
 
             <v-dialog
               v-model="dialog"
-              max-width="500px"
+              max-width="600px"
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -67,87 +67,96 @@
                   New Project
                 </v-btn>
               </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
+              <v-form
+              ref="form"
+              >
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">{{ formTitle }}</span>
+                  </v-card-title>
 
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.code"
-                          label="Project code"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.product"
-                          label="Product"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.client"
-                          label="Client"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.createdDate"
-                          label="created date"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-text-field
-                          v-model="editedItem.status"
-                          label="status"
-                        />
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col
+                          cols="1"
+                          sm="2"
+                          md="5"
+                        >
+                          <v-text-field
+                            v-model="editedItem.code"
+                            required
+                            :rules="[v => !!v || 'Item is required']"
+                            :counter="10"
+                            label="Project code"
+                          />
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col
+                          cols="12"
+                          sm="10"
+                          md="12"
+                        >
+                          <v-text-field
+                            v-model="editedItem.product"
+                            label="Product"
+                            :rules="[v => !!v || 'Item is required']"
+                          />
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="4"
+                        >
+                          <v-select
+                          :rules="[v => !!v || 'Item is required']"
+                            v-model="editedItem.client"
+                            :items="clients"
+                            label="Client"
+                          />
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="4"
+                        >
+                          <v-select
+                            v-if="editedIndex > -1"
+                            v-model="editedItem.status"
+                            :items="statuses"
+                            label="Status"
+                          />
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-card-text>
 
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="close"
-                  >
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    color="blue darken-1"
-                    text
-                    @click="save"
-                  >
-                    Save
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
+                  <v-card-actions>
+                    <v-spacer />
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="close"
+                    >
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="save"
+                    >
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-form>
             </v-dialog>
+
             <v-dialog
               v-model="dialogDelete"
               max-width="500px"
@@ -206,23 +215,44 @@
   </v-container>
 </template>
 <script>
+  // import { validationMixin } from 'vuelidate'
+  // import { required, maxLength, email } from 'vuelidate/lib/validators'
   export default {
+    // mixins: [validationMixin],
+
+    // validations: {
+    //   name: { required, maxLength: maxLength(10) },
+    //   email: { required, email },
+    //   select: { required },
+    //   checkbox: {
+    //     checked (val) {
+    //       return val
+    //     },
+    //   },
+    // },
     data: () => ({
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => v.length <= 10 || 'Name must be less than 10 characters',
+      ],
+      isEdit: true,
+      clients: ['VFARM', 'FPT', 'ACB'],
+      statuses: ['Open', 'Processing', 'Close'],
       search: '',
       dialog: false,
       dialogDelete: false,
       headers: [
         {
           text: 'Project Code',
-          align: 'center',
+
           sortable: false,
           value: 'code',
           width: 100,
 
         },
-        { text: 'Product', value: 'product', align: 'center' },
-        { text: 'Client', value: 'client', align: 'center' },
-        { text: 'Created Date', value: 'createdDate', align: 'center' },
+        { text: 'Product', value: 'product', width: 450 },
+        { text: 'Client', value: 'client' },
+        { text: 'Created Date', value: 'createdDate' },
         { text: 'Status', value: 'status', align: 'center', width: 100 },
         { text: 'Actions', value: 'actions', sortable: false, align: 'center' },
       ],
@@ -230,14 +260,14 @@
       editedIndex: -1,
       editedItem: {
         code: '',
-        product: 0,
+        product: '',
         client: 0,
         createdDate: 0,
         status: 0,
       },
       defaultItem: {
         code: '',
-        product: 0,
+        product: '',
         client: 0,
         createdDate: 0,
         status: 0,
@@ -248,6 +278,19 @@
       formTitle () {
         return this.editedIndex === -1 ? 'New Project' : 'Edit Project'
       },
+      // selectErrors () {
+      //   const errors = []
+      //   if (!this.$v.select.$dirty) return errors
+      //   !this.$v.select.required && errors.push('Item is required')
+      //   return errors
+      // },
+      // nameErrors () {
+      //   const errors = []
+      //   if (!this.$v.name.$dirty) return errors
+      //   !this.$v.name.maxLength && errors.push('Name must be at most 10 characters long')
+      //   !this.$v.name.required && errors.push('Name is required.')
+      //   return errors
+      // },
     },
 
     watch: {
@@ -268,74 +311,40 @@
         this.projects = [
           {
             code: 'PR001',
-            product: 159,
-            client: 6.0,
-            createdDate: 24,
+            product: 'COCO MIRACLE ANTI ACNE SOAP',
+            client: 'VFARM',
+            createdDate: '00:15:09, 28/1/2021',
             status: 'Open',
           },
           {
             code: 'PR002',
-            product: 237,
-            client: 9.0,
-            createdDate: 37,
+            product: 'COCO MIRACLE SHAMPOO AND BODY WASH 2IN1',
+            client: 'FPT',
+            createdDate: '00:15:09, 28/1/2021',
             status: 'Open',
           },
           {
             code: 'PR003',
-            product: 262,
-            client: 16.0,
-            createdDate: 23,
+            product: 'NATURAL TINTED LIP BALM',
+            client: 'FPT',
+            createdDate: '00:15:09, 28/1/2021',
             status: 'Processing',
           },
           {
             code: 'PR004',
-            product: 305,
-            client: 3.7,
-            createdDate: 67,
+            product: 'NATURAL COCONUT BELLY BUTTER',
+            client: 'ACB',
+            createdDate: '00:15:09, 28/1/2021',
             status: 'Open',
           },
           {
             code: 'PR005',
-            product: 356,
-            client: 16.0,
-            createdDate: 49,
+            product: 'COCONUT MOOD BOOST BODY OIL',
+            client: 'VFARM',
+            createdDate: '00:15:09, 28/1/2021',
             status: 'Close',
           },
-          {
-            code: 'PR006',
-            product: 375,
-            client: 0.0,
-            createdDate: 94,
-            status: 'Open',
-          },
-          {
-            code: 'PR007',
-            product: 392,
-            client: 0.2,
-            createdDate: 98,
-            status: 'Processing',
-          },
-          {
-            code: 'PR008',
-            product: 408,
-            client: 3.2,
-            createdDate: 87,
-            status: 'Processing',
-          },
-          {
-            code: 'PR009',
-            product: 452,
-            client: 25.0,
-            createdDate: 51,
-            status: 'Open',
-          },
-          {
-            code: 'PR0010',
-            product: 518,
-            client: 26.0,
-            createdDate: 65,
-            status: 'Close',
-          },
+
         ]
       },
 
@@ -357,6 +366,7 @@
       },
 
       close () {
+        this.$refs.form.reset()
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
@@ -373,9 +383,14 @@
       },
 
       save () {
+        console.log(this.$refs.form.validate())
+        if (!this.$refs.form.validate()) return
+        this.$refs.form.validate()
         if (this.editedIndex > -1) {
           Object.assign(this.projects[this.editedIndex], this.editedItem)
         } else {
+          this.editedItem.createdDate = new Date().toLocaleString()
+          this.editedItem.status = 'Open'
           this.projects.push(this.editedItem)
         }
         this.close()
@@ -390,10 +405,8 @@
 </script>
 <style>
   #chip-status {
-    width: 80px;
+    width: 100px;
     display: block;
-    text-align: center;
-
   }
   .disable-events {
   pointer-events: none
