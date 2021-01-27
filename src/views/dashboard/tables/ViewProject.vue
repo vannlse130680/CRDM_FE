@@ -47,29 +47,29 @@
               single-line
               hide-details
             />
-
-            <v-dialog
-              v-model="dialog"
-              max-width="600px"
+            <v-form
+              ref="form"
             >
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  color="primary"
-                  dark
-                  class="mb-1"
-                  v-bind="attrs"
-
-                  v-on="on"
-                >
-                  <v-icon left>
-                    mdi-plus
-                  </v-icon>
-                  New Project
-                </v-btn>
-              </template>
-              <v-form
-                ref="form"
+              <v-dialog
+                v-model="dialog"
+                max-width="600px"
               >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    dark
+                    class="mb-1"
+                    v-bind="attrs"
+                    @click="reset"
+                    v-on="on"
+                  >
+                    <v-icon left>
+                      mdi-plus
+                    </v-icon>
+                    New Project
+                  </v-btn>
+                </template>
+
                 <v-card>
                   <v-card-title>
                     <span class="headline">{{ formTitle }}</span>
@@ -154,9 +154,8 @@
                     </v-btn>
                   </v-card-actions>
                 </v-card>
-              </v-form>
-            </v-dialog>
-
+              </v-dialog>
+            </v-form>
             <v-dialog
               v-model="dialogDelete"
               max-width="500px"
@@ -374,7 +373,6 @@
       },
 
       close () {
-        this.$refs.form.reset()
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
@@ -391,12 +389,12 @@
       },
 
       save () {
-        console.log(this.$refs.form.validate())
         if (!this.$refs.form.validate()) return
-        this.$refs.form.validate()
+
         if (this.editedIndex > -1) {
           Object.assign(this.projects[this.editedIndex], this.editedItem)
         } else {
+          console.log(this.editedItem.code)
           this.editedItem.createdDate = new Date().toLocaleString()
           this.editedItem.status = 'Open'
           this.projects.push(this.editedItem)
@@ -410,6 +408,11 @@
       },
       view () {
         this.$router.push({ path: '/project/view-project-detail' })
+      },
+      reset () {
+        if (!this.$refs.form.validate()) {
+          this.$refs.form.reset()
+        }
       },
     },
   }
