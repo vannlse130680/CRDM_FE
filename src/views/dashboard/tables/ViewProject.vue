@@ -120,90 +120,77 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <base-material-card
-      id="btn-create"
-      color="success"
-      icon="mdi-clipboard-plus"
-      title="List project"
-      class="px-5 py-3"
-    >
-      <v-simple-table>
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Project Code</th>
-            <th>Project Name</th>
-            <th>Customer Name</th>
-            <th>Create Date</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>AX001</td>
-            <td>Niger</td>
-            <td>Oud-Turnhout</td>
-            <td>2020/01/01</td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>AX001</td>
-            <td>Niger</td>
-            <td>Oud-Turnhout</td>
-            <td>2020/01/01</td>
-          </tr>
-
-          <tr>
-            <td>2</td>
-            <td>AX002</td>
-            <td>Curaçao</td>
-            <td>Oud-Turnhout</td>
-            <td>2020/01/01</td>
-          </tr>
-
-          <tr>
-            <td>3</td>
-            <td>AX003</td>
-            <td>Netherlands</td>
-            <td>Oud-Turnhout</td>
-            <td>2020/01/01</td>
-          </tr>
-
-          <tr>
-            <td>4</td>
-            <td>AX004</td>
-            <td>Korea, South</td>
-            <td>Oud-Turnhout</td>
-            <td>2020/01/01</td>
-          </tr>
-
-          <tr>
-            <td>5</td>
-            <td>AX005</td>
-            <td>Malawi</td>
-            <td>Oud-Turnhout</td>
-            <td>2020/01/01</td>
-          </tr>
-
-          <tr>
-            <td>6</td>
-            <td>AX006</td>
-            <td>Chile</td>
-            <td>Oud-Turnhout</td>
-            <td>2020/01/01</td>
-          </tr>
-        </tbody>
-      </v-simple-table>
-    </base-material-card>
+    <template>
+      <base-material-card
+        id="btn-create"
+        color="success"
+        icon="mdi-clipboard-plus"
+        title="List project"
+        class="px-5 py-3"
+      >
+        <v-card-title>
+          Project
+          <v-spacer />
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+          />
+        </v-card-title>
+        <v-data-table
+          :headers="headers"
+          :items="projects"
+          :items-per-page="5"
+          :search="search"
+          @click:row="dialog = true"
+        />
+      </base-material-card>
+    </template>
   </v-container>
 </template>
 <script>
   export default {
     data () {
       return {
+        search: '',
+        headers: [
+          {
+            text: 'No',
+            align: 'start',
+            sortable: false,
+            value: 'no',
+          },
+          { text: 'Code', value: 'code' },
+          { text: 'Product', value: 'product' },
+          { text: 'Customer', value: 'customerName' },
+          { text: 'createDate', value: 'createDate', sortable: false },
+          { text: 'Iron (%)', value: 'iron' },
+        ],
         dialog: false,
+        projects: [],
       }
+    },
+    mounted () {
+      for (let i = 1; i < 10; i++) {
+        this.projects.push({
+          no: i,
+          code: 'PR00' + i,
+          product: 'Body Wash 2in1',
+          customerName: 24,
+          createDate: '2021/01/01',
+          iron: '1%',
+        })
+      }
+    },
+    methods: {
+      rowClick (item) {
+        this.dialog = true
+      },
+      createProject () {
+        this.$router.push({ name: 'Create Project' })
+      },
     },
   }
 </script>
