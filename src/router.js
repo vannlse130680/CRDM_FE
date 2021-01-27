@@ -47,7 +47,7 @@ export default new Router({
         {
           name: 'View Project Detail',
           path: 'project/view-project-detail',
-          component: () => import('@/views/dashboard/pages/ViewProjectDetail'),
+          component: () => import('@/views/dashboard/tables/ProjectDetails'),
         },
         // // Maps
         // {

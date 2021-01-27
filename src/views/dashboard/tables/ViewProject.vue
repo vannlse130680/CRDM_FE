@@ -68,7 +68,7 @@
                 </v-btn>
               </template>
               <v-form
-              ref="form"
+                ref="form"
               >
                 <v-card>
                   <v-card-title>
@@ -112,8 +112,8 @@
                           md="4"
                         >
                           <v-select
-                          :rules="[v => !!v || 'Item is required']"
                             v-model="editedItem.client"
+                            :rules="[v => !!v || 'Item is required']"
                             :items="clients"
                             label="Client"
                           />
@@ -197,9 +197,17 @@
           </v-icon>
           <v-icon
             small
+            class="mr-2"
             @click="deleteItem(item)"
           >
             mdi-delete
+          </v-icon>
+          <v-icon
+            small
+            class="mr-2"
+            @click="view"
+          >
+            mdi-eye
           </v-icon>
         </template>
         <template v-slot:no-data>
@@ -399,6 +407,9 @@
         if (status === 'Open') return 'green'
         else if (status === 'Processing') return 'orange'
         else if (status === 'Close') return 'red'
+      },
+      view () {
+        this.$router.push({ path: '/project/view-project-detail' })
       },
     },
   }
