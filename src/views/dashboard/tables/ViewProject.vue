@@ -28,7 +28,7 @@
             :color="getColor(item.status)"
             dark
           >
-            {{ item.status }}
+            {{ setStatus(item.status) }}
           </v-chip>
         </template>
         <template v-slot:top>
@@ -77,21 +77,21 @@
 
                   <v-card-text>
                     <v-container>
-                      <v-row>
+                      <!-- <v-row>
                         <v-col
                           cols="1"
                           sm="2"
                           md="5"
                         >
                           <v-text-field
-                            v-model="editedItem.code"
+                            v-model="editedItem.id"
                             required
                             :rules="[v => !!v || 'Item is required']"
                             :counter="10"
                             label="Project code"
                           />
                         </v-col>
-                      </v-row>
+                      </v-row> -->
                       <v-row>
                         <v-col
                           cols="12"
@@ -112,9 +112,11 @@
                           md="4"
                         >
                           <v-select
-                            v-model="editedItem.client"
+                            v-model="editedItem.clientId"
                             :rules="[v => !!v || 'Item is required']"
                             :items="clients"
+                            item-text="name"
+                            item-value="id"
                             label="Client"
                           />
                         </v-col>
@@ -129,6 +131,8 @@
                             v-if="editedIndex > -1"
                             v-model="editedItem.status"
                             :items="statuses"
+                            item-value="id"
+                            item-text="name"
                             label="Status"
                           />
                         </v-col>
@@ -209,22 +213,24 @@
             mdi-eye
           </v-icon>
         </template>
-        <template v-slot:no-data>
+        <!-- <template v-slot:no-data>
           <v-btn
             color="primary"
             @click="initialize"
           >
             Reset
           </v-btn>
-        </template>
+        </template> -->
       </v-data-table>
     </base-material-card>
   </v-container>
 </template>
 <script>
+  import axios from 'axios'
   // import { validationMixin } from 'vuelidate'
   // import { required, maxLength, email } from 'vuelidate/lib/validators'
   export default {
+
     // mixins: [validationMixin],
 
     // validations: {
@@ -243,8 +249,26 @@
         v => v.length <= 10 || 'Name must be less than 10 characters',
       ],
       isEdit: true,
-      clients: ['VFARM', 'FPT', 'ACB'],
-      statuses: ['Open', 'Processing', 'Close'],
+      clients: [
+        {
+          id: '',
+          name: '',
+        },
+      ],
+      statuses: [
+        {
+          id: 1,
+          name: 'Open',
+        },
+        {
+          id: 2,
+          name: 'Processing',
+        },
+        {
+          id: 3,
+          name: 'Complete',
+        },
+      ],
       search: '',
       dialog: false,
       dialogDelete: false,
@@ -253,29 +277,28 @@
           text: 'Project Code',
 
           sortable: false,
-          value: 'code',
+          value: 'id',
           width: 100,
-
         },
         { text: 'Product', value: 'product', width: 450 },
         { text: 'Client', value: 'client' },
         { text: 'Created Date', value: 'createdDate' },
+        { text: 'Deadline', value: 'deadline' },
         { text: 'Status', value: 'status', align: 'center', width: 100 },
         { text: 'Actions', value: 'actions', sortable: false, align: 'center' },
       ],
+
       projects: [],
       editedIndex: -1,
       editedItem: {
-        code: '',
         product: '',
-        client: 0,
+        clientId: 0,
         createdDate: 0,
         status: 0,
       },
       defaultItem: {
-        code: '',
         product: '',
-        client: 0,
+        clientId: 0,
         createdDate: 0,
         status: 0,
       },
@@ -310,54 +333,54 @@
     },
 
     created () {
-      this.initialize()
+      axios.get('http://localhost:8080/client')
+        .then(response => {
+          this.clients = response.data
+          for (var i = 0; i < this.clients.length; i++) {
+            // console.log(response.data[i].client.name)
+            // console.log(this.clients[i].id)
+          }
+        })
+        .catch(e => {
+          // this.errors.push(e)
+        })
+      axios.get('http://localhost:8080/project')
+        .then(response => {
+          // duyệt để set name cho client
+          this.projects = response.data
+          for (var i = 0; i < response.data.length; i++) {
+            // console.log(response.data[i].client.name)
+            this.projects[i].client = response.data[i].client.name
+          }
+        })
+        .catch(e => {
+          // this.errors.push(e)
+        })
     },
 
     methods: {
-      initialize () {
-        this.projects = [
-          {
-            code: 'PR001',
-            product: 'COCO MIRACLE ANTI ACNE SOAP',
-            client: 'VFARM',
-            createdDate: '00:15:09, 28/1/2021',
-            status: 'Open',
-          },
-          {
-            code: 'PR002',
-            product: 'COCO MIRACLE SHAMPOO AND BODY WASH 2IN1',
-            client: 'FPT',
-            createdDate: '00:15:09, 28/1/2021',
-            status: 'Open',
-          },
-          {
-            code: 'PR003',
-            product: 'NATURAL TINTED LIP BALM',
-            client: 'FPT',
-            createdDate: '00:15:09, 28/1/2021',
-            status: 'Processing',
-          },
-          {
-            code: 'PR004',
-            product: 'NATURAL COCONUT BELLY BUTTER',
-            client: 'ACB',
-            createdDate: '00:15:09, 28/1/2021',
-            status: 'Open',
-          },
-          {
-            code: 'PR005',
-            product: 'COCONUT MOOD BOOST BODY OIL',
-            client: 'VFARM',
-            createdDate: '00:15:09, 28/1/2021',
-            status: 'Close',
-          },
+      customizeObj (response) {
+        return {
+          id: response.data.id,
+          product: response.data.product,
+          client: response.data.client.name,
+          clientId: response.data.client.id,
+          createdDate: response.data.createdDate,
+          status: response.data.status,
+          deadline: response.data.deadline,
+        }
+      },
 
-        ]
+      setStatus (statusCode) {
+        if (statusCode === 1) return 'Open'
+        if (statusCode === 2) return 'Processing'
+        if (statusCode === 3) return 'Complete'
       },
 
       editItem (item) {
         this.editedIndex = this.projects.indexOf(item)
         this.editedItem = Object.assign({}, item)
+        console.log(this.editedItem)
         this.dialog = true
       },
 
@@ -394,17 +417,24 @@
         if (this.editedIndex > -1) {
           Object.assign(this.projects[this.editedIndex], this.editedItem)
         } else {
-          console.log(this.editedItem.code)
-          this.editedItem.createdDate = new Date().toLocaleString()
-          this.editedItem.status = 'Open'
-          this.projects.push(this.editedItem)
+          console.log(this.editedItem)
+          axios.post('http://localhost:8080/project', this.editedItem)
+            .then(response => {
+              // console.log(response)
+
+              if (response.status === 200) { this.projects.push(this.customizeObj(response)) }
+            })
+            .catch(e => {
+              this.errors.push(e)
+            })
+          // this.projects.push(this.editedItem)
         }
         this.close()
       },
       getColor (status) {
-        if (status === 'Open') return 'green'
-        else if (status === 'Processing') return 'orange'
-        else if (status === 'Close') return 'red'
+        if (status === 1) return 'blue'
+        else if (status === 2) return 'orange'
+        else if (status === 3) return 'greend'
       },
       view () {
         this.$router.push({ path: '/project/view-project-detail' })
