@@ -170,6 +170,32 @@
                           </v-menu>
                         </v-col>
                       </v-row>
+                      <v-row>
+                        <v-combobox
+                          v-model="chips"
+                          :items="users"
+                          item-text="name"
+                          item-value="id"
+                          chips
+                          clearable
+                          label="Assign user"
+                          multiple
+                          prepend-icon="mdi-filter-variant"
+                          solo
+                        >
+                          <template v-slot:selection="{ attrs, item, select, selected }">
+                            <v-chip
+                              v-bind="attrs"
+                              :input-value="selected"
+                              close
+                              @click="select"
+                              @click:close="remove(item)"
+                            >
+                              <strong>{{ item.name }}</strong>&nbsp;
+                            </v-chip>
+                          </template>
+                        </v-combobox>
+                      </v-row>
                     </v-container>
                   </v-card-text>
 
@@ -278,6 +304,14 @@
     // },
     data: () => ({
       // date: new Date().toISOString().substr(0, 10),
+      projectAssign:
+        {
+          project: '',
+          users: [],
+        },
+
+      chips: [],
+      users: [],
       menu: false,
       modal: false,
       menu2: false,
@@ -380,7 +414,7 @@
         .catch(e => {
           console.log(e)
         })
-      axios.get('http://172.16.189.126:8080/project')
+      axios.get('http://localhost:8080/project')
         .then(response => {
           // duyệt để set name cho client
           this.projects = response.data
@@ -393,9 +427,20 @@
         .catch(e => {
           // this.errors.push(e)
         })
+      axios.get('http://localhost:8080/user')
+        .then(response => {
+          this.users = response.data
+        })
+        .catch(e => {
+          // this.errors.push(e)
+        })
     },
 
     methods: {
+      remove (item) {
+        this.chips.splice(this.chips.indexOf(item), 1)
+        this.chips = [...this.chips]
+      },
       formatDate (timestamp) {
         return new Date(timestamp).toISOString().substr(0, 10)
       },
@@ -459,8 +504,12 @@
         if (this.editedIndex > -1) {
           Object.assign(this.projects[this.editedIndex], this.editedItem)
         } else {
-          console.log(this.editedItem)
-          axios.post('http://localhost:8080/project', this.editedItem)
+          // console.log(this.editedItem)
+          this.projectAssign.project = this.editedItem
+          console.log(this.projectAssign)
+          this.projectAssign.users = this.chips
+          // console.log(this.projectAssig)
+          axios.post('http://localhost:8080/project', this.projectAssign)
             .then(response => {
               // console.log(response)
 
