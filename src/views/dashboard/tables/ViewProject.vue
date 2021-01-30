@@ -62,6 +62,7 @@
                     v-bind="attrs"
 
                     v-on="on"
+                    @click="reset"
                   >
                     <v-icon left>
                       mdi-plus
@@ -331,14 +332,14 @@
         clientId: 0,
         createdDate: 0,
         status: 0,
-        deadline: new Date().toISOString().substr(0, 10),
+        deadline: '',
       },
       defaultItem: {
         product: '',
         clientId: 0,
         createdDate: 0,
         status: 0,
-        deadline: new Date().toISOString().substr(0, 10),
+        deadline: '',
       },
     }),
 
@@ -371,26 +372,22 @@
     },
 
     created () {
+      // Get list client
       axios.get('http://localhost:8080/client')
         .then(response => {
           this.clients = response.data
-          for (var i = 0; i < this.clients.length; i++) {
-            // console.log(response.data[i].client.name)
-            // console.log(this.clients[i].id)
-          }
         })
         .catch(e => {
-          // this.errors.push(e)
+          console.log(e)
         })
       axios.get('http://172.16.189.126:8080/project')
         .then(response => {
           // duyệt để set name cho client
           this.projects = response.data
           for (var i = 0; i < response.data.length; i++) {
-            // console.log(response.data[i].client.name)
             this.projects[i].client = response.data[i].client.name
             this.projects[i].createdDate = this.formatDate(response.data[i].createdDate)
-            this.projects[i].deadline = this.formatDate(response.data[i].deadline)
+            this.projects[i].deadline = response.data[i].deadline != null ? this.formatDate(response.data[i].deadline) : ''
           }
         })
         .catch(e => {
@@ -410,7 +407,7 @@
           clientId: response.data.client.id,
           createdDate: this.formatDate(response.data.createdDate),
           status: response.data.status,
-          deadline: this.formatDate(response.data.deadline),
+          deadline: response.data.deadline != null ? this.formatDate(response.data.deadline) : '',
         }
       },
 
@@ -423,7 +420,7 @@
       editItem (item) {
         this.editedIndex = this.projects.indexOf(item)
         this.editedItem = Object.assign({}, item)
-        console.log(this.editedItem)
+        // console.log(this.editedItem)
         this.dialog = true
       },
 
@@ -439,12 +436,12 @@
       },
 
       close () {
-        this.reset()
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
 
           this.editedIndex = -1
         })
+
         this.dialog = false
       },
 
@@ -470,9 +467,8 @@
               if (response.status === 200) { this.projects.push(this.customizeObj(response)) }
             })
             .catch(e => {
-              this.errors.push(e)
+              console.log(e)
             })
-          // this.projects.push(this.editedItem)
         }
         this.close()
       },
@@ -485,9 +481,6 @@
         this.$router.push({ path: '/project/view-project-detail' })
       },
       reset () {
-        this.editedItem.deadline = new Date().toISOString().substr(0, 10)
-        console.log(this.editedItem)
-
         if (!this.$refs.form.validate()) {
           this.$refs.form.reset()
         }
