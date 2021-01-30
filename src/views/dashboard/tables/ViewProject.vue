@@ -60,7 +60,7 @@
                     dark
                     class="mb-1"
                     v-bind="attrs"
-                    @click="reset"
+
                     v-on="on"
                   >
                     <v-icon left>
@@ -135,6 +135,38 @@
                             item-text="name"
                             label="Status"
                           />
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="4"
+                        >
+                          <v-menu
+                            v-model="menu2"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="auto"
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-text-field
+                                v-model="editedItem.deadline"
+                                label="Deadline"
+                                prepend-icon="mdi-calendar"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                              />
+                            </template>
+                            <v-date-picker
+                              v-model="editedItem.deadline"
+                              color="primary"
+                              @input="menu2 = false"
+                            />
+                          </v-menu>
                         </v-col>
                       </v-row>
                     </v-container>
@@ -244,6 +276,10 @@
     //   },
     // },
     data: () => ({
+      // date: new Date().toISOString().substr(0, 10),
+      menu: false,
+      modal: false,
+      menu2: false,
       nameRules: [
         v => !!v || 'Name is required',
         v => v.length <= 10 || 'Name must be less than 10 characters',
@@ -280,7 +316,7 @@
           value: 'id',
           width: 100,
         },
-        { text: 'Product', value: 'product', width: 450 },
+        { text: 'Product', value: 'product', width: 350 },
         { text: 'Client', value: 'client' },
         { text: 'Created Date', value: 'createdDate' },
         { text: 'Deadline', value: 'deadline' },
@@ -295,12 +331,14 @@
         clientId: 0,
         createdDate: 0,
         status: 0,
+        deadline: new Date().toISOString().substr(0, 10),
       },
       defaultItem: {
         product: '',
         clientId: 0,
         createdDate: 0,
         status: 0,
+        deadline: new Date().toISOString().substr(0, 10),
       },
     }),
 
@@ -344,13 +382,15 @@
         .catch(e => {
           // this.errors.push(e)
         })
-      axios.get('http://localhost:8080/project')
+      axios.get('http://172.16.189.126:8080/project')
         .then(response => {
           // duyệt để set name cho client
           this.projects = response.data
           for (var i = 0; i < response.data.length; i++) {
             // console.log(response.data[i].client.name)
             this.projects[i].client = response.data[i].client.name
+            this.projects[i].createdDate = this.formatDate(response.data[i].createdDate)
+            this.projects[i].deadline = this.formatDate(response.data[i].deadline)
           }
         })
         .catch(e => {
@@ -359,15 +399,18 @@
     },
 
     methods: {
+      formatDate (timestamp) {
+        return new Date(timestamp).toISOString().substr(0, 10)
+      },
       customizeObj (response) {
         return {
           id: response.data.id,
           product: response.data.product,
           client: response.data.client.name,
           clientId: response.data.client.id,
-          createdDate: response.data.createdDate,
+          createdDate: this.formatDate(response.data.createdDate),
           status: response.data.status,
-          deadline: response.data.deadline,
+          deadline: this.formatDate(response.data.deadline),
         }
       },
 
@@ -396,11 +439,13 @@
       },
 
       close () {
-        this.dialog = false
+        this.reset()
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
+
           this.editedIndex = -1
         })
+        this.dialog = false
       },
 
       closeDelete () {
@@ -440,6 +485,9 @@
         this.$router.push({ path: '/project/view-project-detail' })
       },
       reset () {
+        this.editedItem.deadline = new Date().toISOString().substr(0, 10)
+        console.log(this.editedItem)
+
         if (!this.$refs.form.validate()) {
           this.$refs.form.reset()
         }
