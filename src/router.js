@@ -49,6 +49,21 @@ export default new Router({
           path: 'project/view-project-detail',
           component: () => import('@/views/dashboard/tables/ProjectDetails'),
         },
+        {
+          name: 'Client view',
+          path: 'project/client-view',
+          component: () => import('@/views/dashboard/tables/ClientView.vue'),
+        },
+        {
+          name: 'User view',
+          path: 'project/user-view',
+          component: () => import('@/views/dashboard/tables/UserView.vue'),
+        },
+        {
+          name: 'Material view',
+          path: 'project/material-view',
+          component: () => import('@/views/dashboard/tables/MaterialView.vue'),
+        },
         // // Maps
         // {
         //   name: 'Google Maps',

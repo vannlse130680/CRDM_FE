@@ -111,33 +111,26 @@
           title: 'dashboard',
           to: '/',
         },
-
         {
           title: 'rtables',
           icon: 'mdi-clipboard-outline',
           to: '/project/view-project',
         },
-
-        // {
-        //   title: 'typography',
-        //   icon: 'mdi-format-font',
-        //   to: '/components/typography',
-        // },
-        // {
-        //   title: 'icons',
-        //   icon: 'mdi-chart-bubble',
-        //   to: '/components/icons',
-        // },
-        // {
-        //   title: 'google',
-        //   icon: 'mdi-map-marker',
-        //   to: '/maps/google-maps',
-        // },
-        // {
-        //   title: 'notifications',
-        //   icon: 'mdi-bell',
-        //   to: '/components/notifications',
-        // },
+        {
+          title: 'rClient',
+          icon: 'mdi-clipboard-outline',
+          to: '/project/client-view',
+        },
+        {
+          title: 'rUser',
+          icon: 'mdi-clipboard-outline',
+          to: '/project/user-view',
+        },
+        {
+          title: 'rMaterial',
+          icon: 'mdi-clipboard-outline',
+          to: '/project/material-view',
+        },
       ],
     }),
 
