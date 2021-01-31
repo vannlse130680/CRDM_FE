@@ -41,5 +41,8 @@
   "user": "Create Project",
   "vforms": "Validation Forms",
   "widgets": "Widgets",
-  "wizard": "Wizard"
+  "wizard": "Wizard",
+  "rClient": "Client",
+  "rUser": "User",
+  "rMaterial": "Material"
 }

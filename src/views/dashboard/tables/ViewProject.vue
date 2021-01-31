@@ -171,7 +171,8 @@
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-combobox
+                        <v-autocomplete
+
                           v-model="chips"
                           :items="users"
                           item-text="name"
@@ -194,7 +195,7 @@
                               <strong>{{ item.name }}</strong>&nbsp;
                             </v-chip>
                           </template>
-                        </v-combobox>
+                        </v-autocomplete>
                       </v-row>
                     </v-container>
                   </v-card-text>

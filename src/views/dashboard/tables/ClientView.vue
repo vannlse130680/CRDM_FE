@@ -171,7 +171,7 @@
     },
 
     created () {
-      axios.get('http://172.16.189.126:8080/client')
+      axios.get('http://localhost:8080/client')
         .then(response => {
           this.desserts = response.data
         })
@@ -235,7 +235,7 @@
           Object.assign(this.desserts[this.editedIndex], this.editedItem)
         } else {
           console.log(this.editedItem)
-          axios.post('http://172.16.189.126:8080/client', this.editedItem)
+          axios.post('http://localhost:8080/client', this.editedItem)
             .then(response => {
               console.log(response)
 
