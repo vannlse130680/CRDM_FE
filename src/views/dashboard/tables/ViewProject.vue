@@ -172,30 +172,41 @@
                       </v-row>
                       <v-row>
                         <v-autocomplete
-
                           v-model="chips"
+                          autocomplete="true"
                           :items="users"
                           item-text="name"
-                          item-value="id"
+                          item-value="name"
                           chips
                           clearable
                           label="Assign user"
                           multiple
                           prepend-icon="mdi-filter-variant"
                           solo
+                          return-object
                         >
-                          <template v-slot:selection="{ attrs, item, select, selected }">
+                          <template v-slot:selection=" data ">
                             <v-chip
-                              v-bind="attrs"
-                              :input-value="selected"
+                              v-bind="data.attrs"
+                              :input-value="data.selected"
                               close
-                              @click="select"
-                              @click:close="remove(item)"
+                              @click="data.select"
+                              @click:close="remove(data.item)"
                             >
-                              <strong>{{ item.name }}</strong>&nbsp;
+                              <strong>{{ data.item.name }}</strong>&nbsp;
                             </v-chip>
                           </template>
                         </v-autocomplete>
+                      </v-row>
+                      <v-row>
+                        <v-textarea
+                          v-model="editedItem.requirement"
+                          autocomplete="email"
+                          clearable
+                          counter
+                          rows="2"
+                          label="Requirement"
+                        />
                       </v-row>
                     </v-container>
                   </v-card-text>
@@ -220,7 +231,7 @@
                 </v-card>
               </v-dialog>
             </v-form>
-            <v-dialog
+            <!-- <v-dialog
               v-model="dialogDelete"
               max-width="500px"
             >
@@ -247,7 +258,7 @@
                   <v-spacer />
                 </v-card-actions>
               </v-card>
-            </v-dialog>
+            </v-dialog> -->
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
@@ -258,17 +269,17 @@
           >
             mdi-pencil
           </v-icon>
-          <v-icon
+          <!-- <v-icon
             small
             class="mr-2"
             @click="deleteItem(item)"
           >
             mdi-delete
-          </v-icon>
+          </v-icon> -->
           <v-icon
             small
             class="mr-2"
-            @click="view"
+            @click="view(item)"
           >
             mdi-eye
           </v-icon>
@@ -363,18 +374,22 @@
       projects: [],
       editedIndex: -1,
       editedItem: {
+        id: '',
         product: '',
         clientId: 0,
         createdDate: 0,
         status: 0,
         deadline: '',
+        requirement: '',
       },
       defaultItem: {
+        id: '',
         product: '',
         clientId: 0,
         createdDate: 0,
         status: 0,
         deadline: '',
+        requirement: '',
       },
     }),
 
@@ -470,16 +485,16 @@
         this.dialog = true
       },
 
-      deleteItem (item) {
-        this.editedIndex = this.projects.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-      },
+      // deleteItem (item) {
+      //   this.editedIndex = this.projects.indexOf(item)
+      //   this.editedItem = Object.assign({}, item)
+      //   this.dialogDelete = true
+      // },
 
-      deleteItemConfirm () {
-        this.projects.splice(this.editedIndex, 1)
-        this.closeDelete()
-      },
+      // deleteItemConfirm () {
+      //   this.projects.splice(this.editedIndex, 1)
+      //   this.closeDelete()
+      // },
 
       close () {
         this.$nextTick(() => {
@@ -491,13 +506,13 @@
         this.dialog = false
       },
 
-      closeDelete () {
-        this.dialogDelete = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
-      },
+      // closeDelete () {
+      //   this.dialogDelete = false
+      //   this.$nextTick(() => {
+      //     this.editedItem = Object.assign({}, this.defaultItem)
+      //     this.editedIndex = -1
+      //   })
+      // },
 
       save () {
         if (!this.$refs.form.validate()) return
@@ -527,8 +542,11 @@
         else if (status === 2) return 'orange'
         else if (status === 3) return 'greend'
       },
-      view () {
-        this.$router.push({ path: '/project/view-project-detail' })
+      view (item) {
+        this.editedIndex = this.projects.indexOf(item)
+        this.editedItem = Object.assign({}, item)
+        console.log()
+        this.$router.push({ name: 'View Project Detail', query: { projectId: this.editedItem.id } })
       },
       reset () {
         if (!this.$refs.form.validate()) {

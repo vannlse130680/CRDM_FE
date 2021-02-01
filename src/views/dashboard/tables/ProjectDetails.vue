@@ -2,148 +2,259 @@
   <v-container
     id="data-tables"
     tag="section"
+    fluid
   >
-    <v-row>
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
+    <v-card
+      class="overflow-hidden"
+      color=""
+      width="1600"
+    >
+      <v-toolbar
+        flat
+        color="primary"
       >
-        <v-text-field
-          label="Project Code"
-          value="PRO001"
-        />
-      </v-col>
-
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-text-field
-          label="Product"
-          value="Coconut Soap"
-        />
-      </v-col>
-
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-text-field
-          label="Client"
-          value="ABC Cosmetics"
-        />
-      </v-col>
-
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-combobox
-          v-model="select"
-          :items="items"
-          label="Assignee"
-          multiple
-          chips
+        <v-icon>mdi-account</v-icon>
+        <v-toolbar-title
+          class="font-weight-light"
+          color="primary"
         >
-          <template v-slot:selection="data">
-            <v-chip
-              :key="JSON.stringify(data.item)"
-              v-bind="data.attrs"
-              :input-value="data.selected"
-              :disabled="data.disabled"
-              @click:close="data.parent.selectItem(data.item)"
+          Project Information
+        </v-toolbar-title>
+        <v-spacer />
+        <v-btn
+          color="primary darken-3"
+          fab
+          small
+          @click="isEditing = !isEditing"
+        >
+          <v-icon v-if="isEditing">
+            mdi-close
+          </v-icon>
+          <v-icon v-else>
+            mdi-pencil
+          </v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card-text>
+        <v-row>
+          <v-col
+            cols="12"
+            sm="2"
+            md="1"
+          >
+            <v-text-field
+              v-model="selectedProject.id"
+              :disabled="!isEditing"
+
+              label="Project Code"
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            sm="3"
+            md="3"
+          >
+            <v-text-field
+              v-model="selectedProject.product"
+              :disabled="!isEditing"
+
+              label="Product"
+              width="100"
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            sm="3"
+            md="3"
+          >
+            <v-select
+              v-model="selectedProject.client"
+              :disabled="!isEditing"
+              :rules="[v => !!v || 'Item is required']"
+              :items="clients"
+              item-text="name"
+              item-value="id"
+              label="Client"
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            sm="3"
+            md="2"
+          >
+            <v-text-field
+              v-model="selectedProject.createdDate"
+              :disabled="!isEditing"
+              prepend-icon="mdi-calendar"
+              label="Created Day"
+              width="100"
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            sm="3"
+            md="2"
+          >
+            <v-menu
+              v-model="menu2"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
             >
-              <v-avatar
-                class="accent white--text"
-                left
-                v-text="data.item.slice(0, 1).toUpperCase()"
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="selectedProject.deadline"
+                  :disabled="!isEditing"
+                  label="Deadline"
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                />
+              </template>
+              <v-date-picker
+                v-model="selectedProject.deadline"
+                color="primary"
+                @input="menu2 = false"
               />
-              {{ data.item }}
-            </v-chip>
-          </template>
-        </v-combobox>
-      </v-col>
+            </v-menu>
+          </v-col>
+          <v-col>
+            <v-select
 
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
+              v-model="selectedProject.status"
+              :items="statuses"
+              item-value="id"
+              item-text="name"
+              label="Status"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-textarea
+              v-model="selectedProject.requirement"
+              label="Requirement"
+            />
+          </v-col>
+          <v-col>
+            <v-autocomplete
+              v-model="chips"
+
+              :items="users"
+              item-text="name"
+              item-value="name"
+              chips
+              clearable
+              label="Assign user"
+              multiple
+              prepend-icon="mdi-filter-variant"
+              solo
+              return-object
+            >
+              <template v-slot:selection=" data ">
+                <v-chip
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  close
+                  @click="data.select"
+                  @click:close="remove(data.item)"
+                >
+                  <strong>{{ data.item.name }}</strong>&nbsp;
+                </v-chip>
+              </template>
+            </v-autocomplete>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-divider />
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          v-if="isEditing"
+          :disabled="!isEditing"
+          color="success"
+          @click="save"
+        >
+          Save
+        </v-btn>
+      </v-card-actions>
+      <v-snackbar
+        v-model="hasSaved"
+        :timeout="2000"
+        absolute
+        bottom
+        left
       >
-        <v-text-field
-          label="Create date"
-          placeholder="2021/01/26"
-          disabled
-        />
-      </v-col>
+        Your profile has been updated
+      </v-snackbar>
+    </v-card>
 
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-text-field
-          label="Reporter"
-          value="Manager"
-          disabled
-        />
-      </v-col>
+    <!-- <base-material-card
+      icon="mdi-vuetify"
+      inline
+      class="px-5 py-3"
+    >
+      <template v-slot:after-heading>
+        <div class="display-2 font-weight-light">
+          Formula Version
+        </div>
+      </template>
 
-      <v-col
-        cols="12"
-        sm="6"
-        md="3"
-      >
-        <v-text-field
-          label="Requirment"
-          textarea
-          outline
-        />
-      </v-col>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        class="ml-auto"
+        label="Search"
+        hide-details
+        single-line
+        style="max-width: 250px;"
+      />
 
-      <base-material-card
-        icon="mdi-vuetify"
-        inline
-        class="px-5 py-3"
-      >
-        <template v-slot:after-heading>
-          <div class="display-2 font-weight-light">
-            Formula Version
-          </div>
-        </template>
+      <v-divider class="mt-3" />
 
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          class="ml-auto"
-          label="Search"
-          hide-details
-          single-line
-          style="max-width: 250px;"
-        />
-
-        <v-divider class="mt-3" />
-
-        <v-data-table
-          :headers="headers"
-          :items="items"
-          :search.sync="search"
-          :sort-by="['name', 'office']"
-          :sort-desc="[false, true]"
-          multi-sort
-        />
-      </base-material-card>
-    </v-row>
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        :search.sync="search"
+        :sort-by="['name', 'office']"
+        :sort-desc="[false, true]"
+        multi-sort
+      />
+    </base-material-card> -->
   </v-container>
 </template>
 <script>
+  import axios from 'axios'
   export default {
     name: 'DashboardDataTables',
 
     data: () => ({
+      users: [],
+      chips: [],
+      menu: false,
+      modal: false,
+      menu2: false,
+      clients: [],
+      hasSaved: false,
+      isEditing: null,
+      model: null,
+      statuses: [
+        {
+          id: 1,
+          name: 'Open',
+        },
+        {
+          id: 2,
+          name: 'Processing',
+        },
+        {
+          id: 3,
+          name: 'Complete',
+        },
+      ],
       headers: [
         {
           text: 'Name',
@@ -171,59 +282,66 @@
           value: 'actions',
         },
       ],
-      items: [
-        {
-          name: 'Airi Satou',
-          position: 'Accountant',
-          office: 'Tokyo',
-          age: 33,
-          date: '2008/11/28',
+      selectedProject: {
+        client: {
+          name: '',
+          id: '',
         },
-        {
-          name: 'Angelica Ramos',
-          position: 'Chief Executive Officer (CEO)',
-          office: 'London',
-          age: 47,
-          date: '2009/10/09',
-        },
-        {
-          name: 'Ashton Cox',
-          position: 'Junior Technical Author',
-          office: 'San Francisco',
-          age: 66,
-          date: '2009/01/12',
-        },
-        {
-          name: 'Bradley Greer',
-          position: 'Software Engineer',
-          office: 'London',
-          age: 41,
-          date: '2012/10/13',
-        },
-        {
-          name: 'Brenden Wagner',
-          position: 'Software Engineer',
-          office: 'San Francisco',
-          age: 28,
-          date: '2011/06/07',
-        },
-      ],
+      },
+      selectedProjectId: '',
       search: undefined,
     }),
-  }
-</script>
-<script>
-  export default {
-    data () {
-      return {
-        select: ['DucPLM', 'LinhLNK'],
-        items: [
-          'DucPLM',
-          'VanNL',
-          'SuNV',
-          'LinhLNK',
-        ],
-      }
+    created () {
+      axios.get('http://localhost:8080/user/' + this.$route.query.projectId)
+        .then(response => {
+          this.chips = response.data
+          console.log(this.chips)
+        })
+        .catch(e => {
+          // this.errors.push(e)
+        })
+      axios.get('http://localhost:8080/user')
+        .then(response => {
+          this.users = response.data
+        })
+        .catch(e => {
+          // this.errors.push(e)
+        })
+      // Get list client
+      axios.get('http://localhost:8080/client')
+        .then(response => {
+          this.clients = response.data
+        })
+        .catch(e => {
+          console.log(e)
+        })
+      this.selectedProjectId = this.$route.query.projectId
+      // console.log(this.$route)
+      axios.get('http://localhost:8080/project/' + this.selectedProjectId)
+        .then(response => {
+          this.selectedProject = response.data
+
+          this.selectedProject.createdDate = this.formatDate(this.selectedProject.createdDate)
+          this.selectedProject.deadline = this.formatDate(this.selectedProject.deadline)
+
+          // console.log(this.chips)
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    },
+    methods: {
+      customFilter (item, queryText, itemText) {
+        const textOne = item.name.toLowerCase()
+        const textTwo = item.abbr.toLowerCase()
+        const searchText = queryText.toLowerCase()
+
+        return textOne.indexOf(searchText) > -1 ||
+          textTwo.indexOf(searchText) > -1
+      },
+      formatDate (timestamp) {
+        return new Date(timestamp).toISOString().substr(0, 10)
+      },
     },
   }
 </script>
