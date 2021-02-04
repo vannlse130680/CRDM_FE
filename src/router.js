@@ -62,7 +62,12 @@ export default new Router({
         {
           name: 'Material view',
           path: 'project/material-view',
-          component: () => import('@/views/dashboard/tables/MaterialView.vue'),
+          component: () => import('@/views/dashboard/tables/Material.vue'),
+        },
+        {
+          name: 'Supplier view',
+          path: 'project/supplier-view',
+          component: () => import('@/views/dashboard/tables/Supplier.vue'),
         },
         // // Maps
         // {

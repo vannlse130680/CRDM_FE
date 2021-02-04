@@ -28,7 +28,7 @@
   "edit-profile": "Edit Profile",
   "register": "Register Page",
   "rforms": "Regular Forms",
-  "rtables": "View Project",
+  "rtables": "Project",
   "rtl": "RTL Support",
   "search": "Search",
   "settings": "Settings",
@@ -44,5 +44,6 @@
   "wizard": "Wizard",
   "rClient": "Client",
   "rUser": "User",
-  "rMaterial": "Material"
+  "rMaterial": "Material",
+  "rSupplier": "Supplier"
 }

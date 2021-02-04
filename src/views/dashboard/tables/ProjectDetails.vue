@@ -44,7 +44,7 @@
           >
             <v-text-field
               v-model="selectedProject.id"
-              :disabled="!isEditing"
+              readonly
 
               label="Project Code"
             />
@@ -56,7 +56,7 @@
           >
             <v-text-field
               v-model="selectedProject.product"
-              :disabled="!isEditing"
+              :readonly="!isEditing"
 
               label="Product"
               width="100"
@@ -68,8 +68,8 @@
             md="3"
           >
             <v-select
-              v-model="selectedProject.client"
-              :disabled="!isEditing"
+              v-model="selectedProject.clientId"
+              :readonly="!isEditing"
               :rules="[v => !!v || 'Item is required']"
               :items="clients"
               item-text="name"
@@ -84,7 +84,7 @@
           >
             <v-text-field
               v-model="selectedProject.createdDate"
-              :disabled="!isEditing"
+              :readonly="!isEditing"
               prepend-icon="mdi-calendar"
               label="Created Day"
               width="100"
@@ -106,12 +106,12 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                   v-model="selectedProject.deadline"
-                  :disabled="!isEditing"
+
                   label="Deadline"
                   prepend-icon="mdi-calendar"
                   readonly
                   v-bind="attrs"
-                  v-on="on"
+                  v-on="!!isEditing ? on : ''"
                 />
               </template>
               <v-date-picker
@@ -125,6 +125,7 @@
             <v-select
 
               v-model="selectedProject.status"
+              :readonly="!isEditing"
               :items="statuses"
               item-value="id"
               item-text="name"
@@ -136,13 +137,14 @@
           <v-col>
             <v-textarea
               v-model="selectedProject.requirement"
+              :readonly="!isEditing"
               label="Requirement"
             />
           </v-col>
           <v-col>
             <v-autocomplete
               v-model="chips"
-
+              :readonly="!isEditing"
               :items="users"
               item-text="name"
               item-value="name"
@@ -237,7 +239,8 @@
       menu: false,
       modal: false,
       menu2: false,
-      clients: [],
+      clients: [
+      ],
       hasSaved: false,
       isEditing: null,
       model: null,
@@ -283,13 +286,14 @@
         },
       ],
       selectedProject: {
-        client: {
-          name: '',
-          id: '',
-        },
       },
       selectedProjectId: '',
       search: undefined,
+      projectUpdataRequest:
+        {
+          project: '',
+          users: [],
+        },
     }),
     created () {
       axios.get('http://localhost:8080/user/' + this.$route.query.projectId)
@@ -331,6 +335,22 @@
         })
     },
     methods: {
+      save () {
+        this.isEditing = !this.isEditing
+
+        this.projectUpdataRequest.users = this.chips
+        this.projectUpdataRequest.project = this.selectedProject
+        console.log(this.projectUpdataRequest)
+        axios.put('http://localhost:8080/project', this.projectUpdataRequest)
+          .then(response => {
+            if (response.status === 200) {
+              this.hasSaved = true
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+      },
       customFilter (item, queryText, itemText) {
         const textOne = item.name.toLowerCase()
         const textTwo = item.abbr.toLowerCase()

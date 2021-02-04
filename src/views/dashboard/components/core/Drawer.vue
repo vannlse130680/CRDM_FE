@@ -117,6 +117,16 @@
           to: '/project/view-project',
         },
         {
+          title: 'rMaterial',
+          icon: 'mdi-sprout',
+          to: '/project/material-view',
+        },
+        {
+          title: 'rSupplier',
+          icon: 'mdi-clipboard-outline',
+          to: '/project/supplier-view',
+        },
+        {
           title: 'rClient',
           icon: 'mdi-clipboard-outline',
           to: '/project/client-view',
@@ -126,11 +136,7 @@
           icon: 'mdi-clipboard-outline',
           to: '/project/user-view',
         },
-        {
-          title: 'rMaterial',
-          icon: 'mdi-clipboard-outline',
-          to: '/project/material-view',
-        },
+
       ],
     }),
 

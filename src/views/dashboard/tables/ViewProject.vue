@@ -522,7 +522,7 @@
         } else {
           // console.log(this.editedItem)
           this.projectAssign.project = this.editedItem
-          console.log(this.projectAssign)
+          // console.log(this.projectAssign)
           this.projectAssign.users = this.chips
           // console.log(this.projectAssig)
           axios.post('http://localhost:8080/project', this.projectAssign)
