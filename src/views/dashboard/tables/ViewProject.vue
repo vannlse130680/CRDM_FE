@@ -540,7 +540,7 @@
       getColor (status) {
         if (status === 1) return 'blue'
         else if (status === 2) return 'orange'
-        else if (status === 3) return 'greend'
+        else if (status === 3) return 'green'
       },
       view (item) {
         this.editedIndex = this.projects.indexOf(item)

@@ -226,6 +226,49 @@
         multi-sort
       />
     </base-material-card> -->
+    <template>
+      <v-card>
+        <v-toolbar
+          color="primary"
+          dark
+          flat
+        >
+          <v-toolbar-title>Formula Version</v-toolbar-title>
+
+          <v-spacer />
+
+          <template v-slot:extension>
+            <v-tabs
+
+              v-model="tab"
+              color="white"
+              align-with-title
+            >
+              <v-tabs-slider color="yellow" />
+
+              <v-tab
+                v-for="item in items"
+                :key="item"
+              >
+                {{ item }}
+              </v-tab>
+            </v-tabs>
+          </template>
+        </v-toolbar>
+
+        <v-tabs-items v-model="tab">
+          <v-tab-item
+            v-for="item in items"
+            :key="item"
+            color="primary"
+          >
+            <v-card flat>
+              <v-card-text v-text="text" />
+            </v-card>
+          </v-tab-item>
+        </v-tabs-items>
+      </v-card>
+    </template>
   </v-container>
 </template>
 <script>
@@ -361,6 +404,10 @@
       },
       formatDate (timestamp) {
         return new Date(timestamp).toISOString().substr(0, 10)
+      },
+      remove (item) {
+        this.chips.splice(this.chips.indexOf(item), 1)
+        this.chips = [...this.chips]
       },
     },
   }
