@@ -4,196 +4,199 @@
     tag="section"
     fluid
   >
-    <v-card
-      class="overflow-hidden"
-      color=""
-      width="1600"
+    <v-form
+      ref="form"
     >
-      <v-toolbar
-        flat
-        color="primary"
+      <v-card
+        class="overflow-hidden"
+        color=""
+        width="1600"
       >
-        <v-icon>mdi-account</v-icon>
-        <v-toolbar-title
-          class="font-weight-light"
+        <v-toolbar
+          flat
+          dark
           color="primary"
         >
-          Project Information
-        </v-toolbar-title>
-        <v-spacer />
-        <v-btn
-          color="primary darken-3"
-          fab
-          small
-          @click="isEditing = !isEditing"
-        >
-          <v-icon v-if="isEditing">
-            mdi-close
-          </v-icon>
-          <v-icon v-else>
-            mdi-pencil
-          </v-icon>
-        </v-btn>
-      </v-toolbar>
-      <v-card-text>
-        <v-row>
-          <v-col
-            cols="12"
-            sm="2"
-            md="1"
+          <v-icon>mdi-clipboard-outline </v-icon>
+          <v-toolbar-title>
+            Project Information
+          </v-toolbar-title>
+          <v-spacer />
+          <v-btn
+            color="primary darken-3"
+            fab
+            small
+            @click="isEditing = !isEditing"
           >
-            <v-text-field
-              v-model="selectedProject.id"
-              readonly
-
-              label="Project Code"
-            />
-          </v-col>
-          <v-col
-            cols="12"
-            sm="3"
-            md="3"
-          >
-            <v-text-field
-              v-model="selectedProject.product"
-              :readonly="!isEditing"
-
-              label="Product"
-              width="100"
-            />
-          </v-col>
-          <v-col
-            cols="12"
-            sm="3"
-            md="3"
-          >
-            <v-select
-              v-model="selectedProject.clientId"
-              :readonly="!isEditing"
-              :rules="[v => !!v || 'Item is required']"
-              :items="clients"
-              item-text="name"
-              item-value="id"
-              label="Client"
-            />
-          </v-col>
-          <v-col
-            cols="12"
-            sm="3"
-            md="2"
-          >
-            <v-text-field
-              v-model="selectedProject.createdDate"
-              :readonly="!isEditing"
-              prepend-icon="mdi-calendar"
-              label="Created Day"
-              width="100"
-            />
-          </v-col>
-          <v-col
-            cols="12"
-            sm="3"
-            md="2"
-          >
-            <v-menu
-              v-model="menu2"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
+            <v-icon v-if="isEditing">
+              mdi-close
+            </v-icon>
+            <v-icon v-else>
+              mdi-pencil
+            </v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <v-row>
+            <v-col
+              cols="12"
+              sm="2"
+              md="1"
             >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  v-model="selectedProject.deadline"
+              <v-text-field
+                v-model="selectedProject.id"
+                readonly
 
-                  label="Deadline"
-                  prepend-icon="mdi-calendar"
-                  readonly
-                  v-bind="attrs"
-                  v-on="!!isEditing ? on : ''"
-                />
-              </template>
-              <v-date-picker
-                v-model="selectedProject.deadline"
-                color="primary"
-                @input="menu2 = false"
+                label="Project Code"
               />
-            </v-menu>
-          </v-col>
-          <v-col>
-            <v-select
-
-              v-model="selectedProject.status"
-              :readonly="!isEditing"
-              :items="statuses"
-              item-value="id"
-              item-text="name"
-              label="Status"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-textarea
-              v-model="selectedProject.requirement"
-              :readonly="!isEditing"
-              label="Requirement"
-            />
-          </v-col>
-          <v-col>
-            <v-autocomplete
-              v-model="chips"
-              :readonly="!isEditing"
-              :items="users"
-              item-text="name"
-              item-value="name"
-              chips
-              clearable
-              label="Assign user"
-              multiple
-              prepend-icon="mdi-filter-variant"
-              solo
-              return-object
+            </v-col>
+            <v-col
+              cols="12"
+              sm="3"
+              md="3"
             >
-              <template v-slot:selection=" data ">
-                <v-chip
-                  v-bind="data.attrs"
-                  :input-value="data.selected"
-                  close
-                  @click="data.select"
-                  @click:close="remove(data.item)"
-                >
-                  <strong>{{ data.item.name }}</strong>&nbsp;
-                </v-chip>
-              </template>
-            </v-autocomplete>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-divider />
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          v-if="isEditing"
-          :disabled="!isEditing"
-          color="success"
-          @click="save"
-        >
-          Save
-        </v-btn>
-      </v-card-actions>
-      <v-snackbar
-        v-model="hasSaved"
-        :timeout="2000"
-        absolute
-        bottom
-        left
-      >
-        Your profile has been updated
-      </v-snackbar>
-    </v-card>
+              <v-text-field
+                v-model="selectedProject.product"
+                :readonly="!isEditing"
+                :rules="[v => !!v || 'Item is required']"
+                label="Product"
+                width="100"
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              sm="3"
+              md="3"
+            >
+              <v-select
+                v-model="selectedProject.clientId"
+                :readonly="!isEditing"
+                :rules="[v => !!v || 'Item is required']"
+                :items="clients"
+                item-text="name"
+                item-value="id"
+                label="Client"
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              sm="3"
+              md="2"
+            >
+              <v-text-field
+                v-model="selectedProject.createdDate"
+                :readonly="!isEditing"
+                prepend-icon="mdi-calendar"
+                label="Created Day"
+                width="100"
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              sm="3"
+              md="2"
+            >
+              <v-menu
+                v-model="menu2"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="selectedProject.deadline"
 
+                    label="Deadline"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="isEditing ? on : ''"
+                  />
+                </template>
+                <v-date-picker
+                  v-model="selectedProject.deadline"
+                  :min="today"
+                  color="primary"
+                  @input="menu2 = false"
+                />
+              </v-menu>
+            </v-col>
+            <v-col>
+              <v-select
+
+                v-model="selectedProject.status"
+                :readonly="!isEditing"
+                :items="statuses"
+                item-value="id"
+                item-text="name"
+                label="Status"
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-textarea
+                v-model="selectedProject.requirement"
+                :readonly="!isEditing"
+                label="Requirement"
+              />
+            </v-col>
+            <v-col>
+              <v-autocomplete
+                v-model="chips"
+                :readonly="!isEditing"
+                :items="users"
+                item-text="name"
+                item-value="name"
+                chips
+                clearable
+                label="Assign user"
+                multiple
+                prepend-icon="mdi-filter-variant"
+                solo
+                return-object
+              >
+                <template v-slot:selection=" data ">
+                  <v-chip
+
+                    v-bind="data.attrs"
+                    :input-value="data.selected"
+                    close
+                    @click="data.select"
+                    @click:close="if(isEditing) remove(data.item)"
+                  >
+                    <strong>{{ data.item.name }}</strong>&nbsp;
+                  </v-chip>
+                </template>
+              </v-autocomplete>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            v-if="isEditing"
+            :disabled="!isEditing"
+            color="success"
+            @click="save"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+        <v-snackbar
+          v-model="hasSaved"
+          :timeout="2000"
+          absolute
+          bottom
+          left
+        >
+          Your project has been updated
+        </v-snackbar>
+      </v-card>
+    </v-form>
     <!-- <base-material-card
       icon="mdi-vuetify"
       inline
@@ -236,37 +239,16 @@
           <v-toolbar-title>Formula Version</v-toolbar-title>
 
           <v-spacer />
-
-          <template v-slot:extension>
-            <v-tabs
-
-              v-model="tab"
-              color="white"
-              align-with-title
-            >
-              <v-tabs-slider color="yellow" />
-
-              <v-tab
-                v-for="item in items"
-                :key="item"
-              >
-                {{ item }}
-              </v-tab>
-            </v-tabs>
-          </template>
         </v-toolbar>
 
-        <v-tabs-items v-model="tab">
-          <v-tab-item
-            v-for="item in items"
-            :key="item"
-            color="primary"
-          >
-            <v-card flat>
-              <v-card-text v-text="text" />
-            </v-card>
-          </v-tab-item>
-        </v-tabs-items>
+        <v-data-table
+          :headers="headers"
+          :items="items"
+          :search.sync="search"
+          :sort-by="['name', 'office']"
+          :sort-desc="[false, true]"
+          multi-sort
+        />
       </v-card>
     </template>
   </v-container>
@@ -277,6 +259,12 @@
     name: 'DashboardDataTables',
 
     data: () => ({
+      tab: null,
+      tab_status: [
+        '', 'shopping', 'videos', 'images', 'news',
+      ],
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      today: new Date().toISOString().substr(0, 10),
       users: [],
       chips: [],
       menu: false,
@@ -379,6 +367,8 @@
     },
     methods: {
       save () {
+        if (!this.$refs.form.validate()) return
+
         this.isEditing = !this.isEditing
 
         this.projectUpdataRequest.users = this.chips

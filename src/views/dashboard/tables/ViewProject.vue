@@ -159,11 +159,13 @@
                                 prepend-icon="mdi-calendar"
                                 readonly
                                 v-bind="attrs"
+                                :rules="[v => !!v || 'Item is required']"
                                 v-on="on"
                               />
                             </template>
                             <v-date-picker
                               v-model="editedItem.deadline"
+                              :min="today"
                               color="primary"
                               @input="menu2 = false"
                             />
@@ -172,6 +174,7 @@
                       </v-row>
                       <v-row>
                         <v-autocomplete
+                          v-if="editedIndex === -1"
                           v-model="chips"
                           autocomplete="true"
                           :items="users"
@@ -200,6 +203,7 @@
                       </v-row>
                       <v-row>
                         <v-textarea
+                          v-if="editedIndex === -1"
                           v-model="editedItem.requirement"
                           autocomplete="email"
                           clearable
@@ -316,6 +320,7 @@
     // },
     data: () => ({
       // date: new Date().toISOString().substr(0, 10),
+      today: new Date().toISOString().substr(0, 10),
       projectAssign:
         {
           project: '',
@@ -518,13 +523,40 @@
         if (!this.$refs.form.validate()) return
 
         if (this.editedIndex > -1) {
-          Object.assign(this.projects[this.editedIndex], this.editedItem)
+          var updateProjectSimpleReq = {
+            id: '',
+            product: '',
+            clientId: '',
+            deadline: '',
+            status: '',
+          }
+          updateProjectSimpleReq.id = this.editedItem.id
+          updateProjectSimpleReq.product = this.editedItem.product
+          updateProjectSimpleReq.clientId = this.editedItem.clientId
+          updateProjectSimpleReq.deadline = this.editedItem.deadline
+          updateProjectSimpleReq.status = this.editedItem.status
+          var index = this.editedIndex
+          var ei = this.editedItem
+          console.log(ei)
+          axios.put('http://localhost:8080/projectSimple', updateProjectSimpleReq)
+            .then(response => {
+              // console.log(response)
+
+              if (response.status === 200) {
+                Object.assign(this.projects[index], ei)
+
+                this.projects[index].client = response.data.client.name
+              }
+            })
+            .catch(e => {
+              console.log(e)
+            })
         } else {
           // console.log(this.editedItem)
           this.projectAssign.project = this.editedItem
           // console.log(this.projectAssign)
           this.projectAssign.users = this.chips
-          // console.log(this.projectAssig)
+          console.log(this.projectAssign)
           axios.post('http://localhost:8080/project', this.projectAssign)
             .then(response => {
               // console.log(response)
