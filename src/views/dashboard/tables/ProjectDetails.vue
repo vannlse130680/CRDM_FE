@@ -243,12 +243,170 @@
 
         <v-data-table
           :headers="headers"
-          :items="items"
-          :search.sync="search"
-          :sort-by="['name', 'office']"
-          :sort-desc="[false, true]"
-          multi-sort
-        />
+          :items="formulas"
+          sort-by="code"
+          class="elevation-1"
+        >
+          <template v-slot:top>
+            <v-toolbar
+              flat
+            >
+              <v-divider
+                class="mx-4"
+                inset
+                vertical
+              />
+              <v-spacer />
+              <v-dialog
+                v-model="dialog"
+                max-width="500px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    dark
+                    class="mb-2"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    New Formula Version
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">{{ formTitle }}</span>
+                  </v-card-title>
+
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <!-- <v-col
+                          cols="12"
+                          sm="6"
+                          md="4"
+                        >
+                          <v-text-field
+                            v-model="editedItem.id"
+                            label="Dessert name"
+                          />
+                        </v-col> -->
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="4"
+                        >
+                          <v-text-field
+                            v-model="editedItem.id"
+                            label="ID"
+                          />
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="4"
+                        >
+                          <v-text-field
+                            v-model="editedItem.fat"
+                            label="Fat (g)"
+                          />
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="4"
+                        >
+                          <v-text-field
+                            v-model="editedItem.carbs"
+                            label="Carbs (g)"
+                          />
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="4"
+                        >
+                          <v-text-field
+                            v-model="editedItem.protein"
+                            label="Protein (g)"
+                          />
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer />
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="close"
+                    >
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="save"
+                    >
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-dialog
+                v-model="dialogDelete"
+                max-width="500px"
+              >
+                <v-card>
+                  <v-card-title class="headline">
+                    Are you sure you want to delete this item?
+                  </v-card-title>
+                  <v-card-actions>
+                    <v-spacer />
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="closeDelete"
+                    >
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="deleteItemConfirm"
+                    >
+                      OK
+                    </v-btn>
+                    <v-spacer />
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-toolbar>
+          </template>
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-icon
+              small
+              class="mr-2"
+              @click="editItem(item)"
+            >
+              mdi-pencil
+            </v-icon>
+            <v-icon
+              small
+              @click="deleteItem(item)"
+            >
+              mdi-delete
+            </v-icon>
+          </template>
+          <!-- <template v-slot:no-data>
+            <v-btn
+              color="primary"
+              @click="initialize"
+            >
+              Reset
+            </v-btn>
+          </template> -->
+        </v-data-table>
       </v-card>
     </template>
   </v-container>
@@ -259,11 +417,7 @@
     name: 'DashboardDataTables',
 
     data: () => ({
-      tab: null,
-      tab_status: [
-        '', 'shopping', 'videos', 'images', 'news',
-      ],
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+
       today: new Date().toISOString().substr(0, 10),
       users: [],
       chips: [],
@@ -289,35 +443,41 @@
           name: 'Complete',
         },
       ],
+
+      dialog: false,
+      dialogDelete: false,
       headers: [
         {
-          text: 'Name',
-          value: 'name',
-        },
-        {
-          text: 'Position',
-          value: 'position',
-        },
-        {
-          text: 'Office',
-          value: 'office',
-        },
-        {
-          text: 'Age',
-          value: 'age',
-        },
-        {
-          text: 'Date',
-          value: 'date',
-        },
-        {
+          text: 'ID',
+          align: 'start',
           sortable: false,
-          text: 'Actions',
-          value: 'actions',
+          value: 'id',
         },
+        { text: 'Code', value: 'code' },
+        { text: 'Created Date', value: 'createdDate' },
+        { text: 'Status', value: 'status' },
+
+        { text: 'Actions', value: 'actions', sortable: false },
       ],
+      formulas: [],
       selectedProject: {
       },
+
+      editedIndex: -1,
+      editedItem: {
+        id: '',
+        code: 0,
+        createdDate: 0,
+        status: 0,
+
+      },
+      defaultItem: {
+        id: '',
+        code: 0,
+        createdDate: 0,
+        status: 0,
+      },
+
       selectedProjectId: '',
       search: undefined,
       projectUpdataRequest:
@@ -326,6 +486,11 @@
           users: [],
         },
     }),
+    computed: {
+      formTitle () {
+        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      },
+    },
     created () {
       axios.get('http://localhost:8080/user/' + this.$route.query.projectId)
         .then(response => {
@@ -364,8 +529,22 @@
         .catch(e => {
           console.log(e)
         })
+
+      axios.get('http://localhost:8080/formula/projectId/' + this.$route.query.projectId)
+        .then(response => {
+          this.formulas = response.data
+          for (var i = 0; i < response.data.length; i++) {
+            this.formulas[i].createdDate = this.formatDate(response.data[i].createdDate)
+          }
+        })
+        .catch(e => {
+          // this.errors.push(e)
+        })
     },
     methods: {
+      formatDate (timestamp) {
+        return new Date(timestamp).toISOString().substr(0, 10)
+      },
       save () {
         if (!this.$refs.form.validate()) return
 
@@ -392,9 +571,7 @@
         return textOne.indexOf(searchText) > -1 ||
           textTwo.indexOf(searchText) > -1
       },
-      formatDate (timestamp) {
-        return new Date(timestamp).toISOString().substr(0, 10)
-      },
+
       remove (item) {
         this.chips.splice(this.chips.indexOf(item), 1)
         this.chips = [...this.chips]
